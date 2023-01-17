@@ -44,12 +44,11 @@ model DayHabit {
 }
 
 model HabitWeekDays {
-  id       String @id @default(uuid())
-  habit_id String
-  week_day Int
-  habit    Habit  @relation(fields: [habitId], references: [id])
-  habitId  String
+  id      String @id @default(uuid())
+  weekDay Int
+  habit   Habit  @relation(fields: [habitId], references: [id])
+  habitId String
 
-  @@unique([habit_id, week_day])
+  @@unique([habitId, weekDay])
   @@map("habit_week_days")
 }

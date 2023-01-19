@@ -12,4 +12,14 @@ export const HABIT_DAY_SIZE =
 
 export const WEEK_DAYS = ['S', 'W', 'M', 'T', 'S', 'T', 'F'];
 
+export const FULL_NAME_WEEK_DAYS = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+
 export const MINIMUM_SUMMARY_DATES_SIZE = 13 * 7; // 91 days or 13 weeks

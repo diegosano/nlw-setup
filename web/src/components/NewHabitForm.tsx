@@ -1,8 +1,42 @@
+import * as Checkbox from '@radix-ui/react-checkbox';
 import { Check } from 'phosphor-react';
+import { FormEvent, useState } from 'react';
+
+import { api } from '../lib/axios';
+import { AVAILABLE_WEEK_DAYS } from '../utils/constants';
 
 export function NewHabitForm() {
+  const [title, setTitle] = useState('');
+  const [weekDays, setWeekDays] = useState<number[]>([]);
+
+  async function createNewHabit(event: FormEvent) {
+    event.preventDefault();
+
+    if (!title || weekDays.length === 0) {
+      return;
+    }
+
+    await api.post('/habits', {
+      title,
+      weekDays,
+    });
+
+    setTitle('');
+    setWeekDays([]);
+  }
+
+  function handleToggleWeekDay(weekDay: number) {
+    if (weekDays.includes(weekDay)) {
+      return setWeekDays((prevState) =>
+        prevState.filter((prevWeekDay) => prevWeekDay !== weekDay)
+      );
+    }
+
+    setWeekDays((prevState) => [...prevState, weekDay]);
+  }
+
   return (
-    <form className="w-full flex flex-col mt-6">
+    <form onSubmit={createNewHabit} className="w-full flex flex-col mt-6">
       <label htmlFor="title" className="font-semibold leading-tight">
         What is your commitment?
       </label>
@@ -12,12 +46,33 @@ export function NewHabitForm() {
         id="title"
         placeholder="ex. Exercise, sleep 2h, read 20 pages.."
         className="p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder:text-zinc-400"
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
         autoFocus
       />
 
-      <label htmlFor="recurrence" className="font-semibold leading-tight">
+      <label htmlFor="recurrence" className="font-semibold leading-tight mt-4">
         What is the recurrence?
       </label>
+
+      <div className="flex flex-col gap-2 mt-3">
+        {AVAILABLE_WEEK_DAYS.map((weekDay, index) => (
+          <Checkbox.Root
+            key={weekDay}
+            className="flex items-center gap-3 group"
+            checked={weekDays.includes(index)}
+            onCheckedChange={() => handleToggleWeekDay(index)}
+          >
+            <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-solid border-2 border-zinc-800 group-data-[state=checked]:bg-green-500 group-data-[state=checked]:border-green-500">
+              <Checkbox.Indicator>
+                <Check size={20} className="text-white" />
+              </Checkbox.Indicator>
+            </div>
+
+            <span className="text-white leading-tight">{weekDay}</span>
+          </Checkbox.Root>
+        ))}
+      </div>
 
       <button
         type="submit"

@@ -32,7 +32,7 @@ export function New() {
   async function handleCreateNewHabit() {
     try {
       if (!title.trim() || weekDays.length === 0) {
-        Alert.alert(
+        return Alert.alert(
           'New habit',
           'Please fill in the title and choose the recurrence'
         );

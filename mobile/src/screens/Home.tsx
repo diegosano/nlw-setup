@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { HabitDay } from '../components/HabitDay';
 import { HabitDayFill } from '../components/HabitDayFill';
 import { Header } from '../components/Header';
+import { Loading } from '../components/Loading';
+
 import {
   HABIT_DAY_SIZE,
   MINIMUM_SUMMARY_DATES_SIZE,
@@ -13,7 +15,6 @@ import {
 } from '../utils/constants';
 import { generateDatesFromYearBeginning } from '../utils/generate-dates-from-year-beginning';
 import { api } from '../lib/axios';
-import { Loading } from '../components/Loading';
 
 const datesFromYearBeginning = generateDatesFromYearBeginning();
 const amountOfDaysToFill =
@@ -31,25 +32,27 @@ export function Home() {
   const [summary, setSummary] = useState<Summary[]>([]);
   const { navigate } = useNavigation();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        const response = await api.get<Summary[]>('/summary');
-        setSummary(response.data);
-      } catch (error) {
-        Alert.alert(
-          'Cops',
-          'Could not load habit summary' + JSON.stringify(error)
-        );
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchData() {
+        try {
+          setIsLoading(true);
+          const response = await api.get<Summary[]>('/summary');
+          setSummary(response.data);
+        } catch (error) {
+          Alert.alert(
+            'Cops',
+            'Could not load habit summary' + JSON.stringify(error)
+          );
+          console.log(error);
+        } finally {
+          setIsLoading(false);
+        }
       }
-    }
 
-    fetchData();
-  }, []);
+      fetchData();
+    }, [])
+  );
 
   if (isLoading) {
     return <Loading />;
